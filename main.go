@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/hex"
 	"log"
 	"net"
 	"os"
@@ -66,7 +65,6 @@ func receiveMessages(addr *net.UDPAddr, msgs chan message) {
 			log.Fatal("ReadFromUDP failed:", err)
 		}
 		if n > 0 {
-			log.Printf("Read %d bytes from %s", n, src)
 			msg := message{
 				src:  src,
 				n:    n,
@@ -79,6 +77,6 @@ func receiveMessages(addr *net.UDPAddr, msgs chan message) {
 
 func printMessages(msgs chan message) {
 	for msg := range msgs {
-		log.Print(hex.Dump(msg.body[:msg.n]))
+		log.Print(string(msg.body[:msg.n]))
 	}
 }
