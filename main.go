@@ -2,9 +2,15 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"net"
 	"os"
+	"strings"
+)
+
+var (
+	username string
 )
 
 const (
@@ -19,6 +25,9 @@ type message struct {
 }
 
 func main() {
+	username = getUsername()
+	fmt.Print(">")
+
 	addr, err := net.ResolveUDPAddr("udp", srvAddr)
 	if err != nil {
 		log.Fatal(err)
@@ -32,6 +41,16 @@ func main() {
 	<-done
 }
 
+func getUsername() string {
+	fmt.Println("What is your username? (type it in below and press enter)")
+	reader := bufio.NewReader(os.Stdin)
+	name, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatal(err)
+	}
+	return strings.TrimSpace(name)
+}
+
 func readInput(addr *net.UDPAddr) {
 	reader := bufio.NewReader(os.Stdin)
 	conn, err := net.DialUDP("udp", nil, addr)
@@ -43,7 +62,8 @@ func readInput(addr *net.UDPAddr) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if _, err := conn.Write(msg); err != nil {
+		fullMsg := fmt.Sprintf("%s: %s", username, string(msg))
+		if _, err := conn.Write([]byte(fullMsg)); err != nil {
 			log.Fatal(err)
 		}
 	}
@@ -77,5 +97,6 @@ func receiveMessages(addr *net.UDPAddr, msgs chan message) {
 func printMessages(msgs chan message) {
 	for msg := range msgs {
 		log.Print(string(msg.body[:msg.n]))
+		fmt.Print(">")
 	}
 }
