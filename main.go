@@ -19,7 +19,6 @@ type message struct {
 }
 
 func main() {
-	// go ping(srvAddr)
 	addr, err := net.ResolveUDPAddr("udp", srvAddr)
 	if err != nil {
 		log.Fatal(err)
